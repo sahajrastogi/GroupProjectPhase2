@@ -1,0 +1,14 @@
+1
+Eating
+How to Eat
+You put the food into your mouth.
+eat,food,mouth
+
+eat,food
+2
+Run
+How to Run
+You put one foot in front of the other while breathing through your nose or mouth. Breathing through the nose is preferred to breathing through the mouth.
+foot,mouth,breathe,run
+
+run
