@@ -1,0 +1,7 @@
+1
+Eating
+How to Eat
+You put the food into your mouth.
+eat,food,mouth
+
+eat,food

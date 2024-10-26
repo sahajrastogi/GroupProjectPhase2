@@ -108,6 +108,14 @@ public class HelpItem {
 		return false;
 	}
 	
+	public static void removeByID(int id) {
+		for(HelpItem h : App.items) {
+			if(h.id == id) {
+				App.items.remove(h);
+				break;
+			}
+		}
+	}
 	
 }
 
