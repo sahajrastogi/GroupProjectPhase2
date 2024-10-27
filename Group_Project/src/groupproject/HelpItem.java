@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class HelpItem {
+	public static int maxId = 0;
 	public int id;
 	public String title;
 	public String description;
@@ -44,6 +45,12 @@ public class HelpItem {
 		return res.substring(0,res.length()-1);
 	}
 	
+	public static ArrayList<String> prettyStringToList(String a) {
+		ArrayList<String> res = new ArrayList<>(Arrays.asList(a.split(",")));
+		for(int i=0;i<res.size();i++) res.set(i, res.get(i).trim());
+		return res;
+	}	
+	
 	public static String listToStringPretty(ArrayList<String> a) {
 		String res = "";
 		for (String s : a) {
@@ -63,6 +70,19 @@ public class HelpItem {
 		return new ArrayList<>(Arrays.asList(list));
 	}
 	
+	public static int add(String ti, String desc, String bo, String ke, String li, String gr) {
+		HelpItem h = new HelpItem();
+		maxId++;
+		h.id = maxId;
+		h.title = ti;
+		h.description = desc;
+		h.body = bo;
+		h.keywords = prettyStringToList(ke);
+		h.links = prettyStringToList(li);
+		h.groups = prettyStringToList(gr);
+		App.items.add(h);
+		return maxId;
+	}
 	public static void backup(String fileName, String groupName) throws Exception {
 		try (FileWriter fW = new FileWriter(fileName)) {
 			
@@ -97,6 +117,7 @@ public class HelpItem {
 		    	h.groups = stringToList(line);
 		    	
 		    	if(!containsID(h.id)) App.items.add(h);
+		    	maxId = Math.max(maxId,h.id);
 		    }
         }
 	}
@@ -115,6 +136,15 @@ public class HelpItem {
 				break;
 			}
 		}
+	}
+	
+	public static HelpItem itemByID(int id) {
+		for(HelpItem h : App.items) {
+			if(h.id == id) {
+				return h;
+			}
+		}
+		return null;
 	}
 	
 }

@@ -177,8 +177,6 @@ public class App extends Application {
 
         			homePage.role = loginPage.comboBox.getSelectionModel().getSelectedItem();
         			homePage.setSceneFromRole();
-
-
 		    		primaryStage.setTitle(homePage.title);
             		primaryStage.setScene(homePage.scene);
         		} else {
@@ -289,6 +287,7 @@ public class App extends Application {
         });
         
         arPage.back.setOnAction(e->{
+			//homePage.setSceneFromRole();
         	primaryStage.setTitle(homePage.title);
     		primaryStage.setScene(homePage.scene);
         });
