@@ -87,7 +87,7 @@ public class HelpItem {
 		try (FileWriter fW = new FileWriter(fileName)) {
 			
 			for(HelpItem h : App.items) {
-				if(!h.groups.contains(groupName) && !groupName.equals("all")) continue;
+				if(!h.groups.contains(groupName) && !groupName.equals("")) continue;
 				fW.write(Integer.toString(h.id)); fW.write("\n");
 				fW.write(h.title); fW.write("\n");
 				fW.write(h.description); fW.write("\n");

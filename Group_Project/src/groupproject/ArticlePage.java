@@ -46,6 +46,7 @@ public class ArticlePage {
     public TextField userField;
     public PasswordField passwordField;
     public PasswordField cPasswordField;
+    public String lastSearch = "";
     ObservableList<String> items = FXCollections.observableArrayList();
     ArrayList<Integer> ids = new ArrayList<>();
     
@@ -75,9 +76,20 @@ public class ArticlePage {
         buttons.setSpacing(20);
         buttons.getChildren().addAll(view,create,update,delete,backup,restore);
         
-        grid.add(helpItemListLabel, 0, 0);
-        grid.add(itemList, 0, 1);
-        grid.add(buttons, 1, 1);
+        
+        Label searchLabel = new Label("Search by group:    ");
+        TextField searchField = new TextField();
+        HBox searchBox = new HBox();
+        searchBox.getChildren().addAll(searchLabel, searchField);
+        Button search = new Button("Search");
+        GridPane.setHalignment(search, HPos.RIGHT);
+        
+        grid.add(searchBox, 0, 0);
+        grid.add(search, 0, 1);
+
+        grid.add(helpItemListLabel, 0, 4);
+        grid.add(itemList, 0, 5);
+        grid.add(buttons, 1, 5);
         grid.add(back, 0, 20);
         
         
@@ -148,7 +160,9 @@ public class ArticlePage {
         TextField keywordsEntry = new TextField();
         TextField linkEntry = new TextField();
         TextField groupEntry = new TextField();
-
+        keywordsEntry.setPromptText("Enter a comma-separated list");
+    	linkEntry.setPromptText("Enter a comma-separated list");
+    	groupEntry.setPromptText("Enter a comma-separated list");
 
         VBox createDisplay = new VBox();
         GridPane fieldGrid = new GridPane();
@@ -217,6 +231,9 @@ public class ArticlePage {
         	keywordsEntry.clear();
         	linkEntry.clear();
         	groupEntry.clear();
+        	
+        	
+
 
         	twoColumns.getChildren().set(1, createDisplay);
 
@@ -334,6 +351,48 @@ public class ArticlePage {
 				//e1.printStackTrace();
 			}
         });
+        
+        VBox backupDisplay = new VBox();
+        Label backupLabel = new Label("File Name:   ");
+        TextField backupField = new TextField();
+        TextField backupGroup = new TextField();
+        Label backupGroupLabel = new Label("Group: ");
+        Button backupButton = new Button("Backup");
+        GridPane backupGrid = new GridPane();
+        backup.setOnAction(e->{
+        	backupGrid.setPadding(new Insets(10, 10, 10, 10));
+        	backupGrid.setVgap(3);
+        	backupGrid.getChildren().clear();
+        	backupGrid.add(backupLabel, 0, 0); backupGrid.add(backupField, 1, 0);
+        	backupGrid.add(backupGroupLabel, 0, 1);  backupGrid.add(backupGroup, 1, 1);
+        	backupGrid.add(backupButton, 1, 2);
+
+        	backupDisplay.getChildren().clear();
+        	backupDisplay.getChildren().addAll(backupGrid);
+        	backupField.clear();
+        	backupGroup.clear();
+        	backupGroup.setPromptText("Leave blank to backup all");
+        	twoColumns.getChildren().set(1, backupDisplay);
+        });
+        
+        backupButton.setOnAction(e->{
+        	try {
+        		HelpItem.backup(backupField.getText(), backupGroup.getText());
+        	}catch(Exception ex) {
+        		Alert alert = new Alert(AlertType.ERROR);
+        		alert.setHeaderText("Error");
+        		alert.setContentText("Invalid file name");
+        		alert.showAndWait();
+        	}
+        });
+        
+        search.setOnAction(e->{
+        	lastSearch = searchField.getText().trim();
+        	System.out.println(lastSearch);
+        	System.out.println(lastSearch.length());
+
+        	updateList();
+        });
         BorderPane totalPage = new BorderPane();
         totalPage.setLeft(twoColumns);
         BorderPane.setMargin(twoColumns, new Insets(100));
@@ -345,9 +404,21 @@ public class ArticlePage {
 		// Creating a ListView, show all registered users
 		items.clear();
 		ids.clear();
+		
         for(HelpItem h : App.items) {
-        	items.add(h.description);
-        	ids.add(h.id);
+    		if(lastSearch.equals("")) {
+    			items.add(h.description);
+            	ids.add(h.id);
+            	continue;
+    		}
+        	for(String s : HelpItem.prettyStringToList(lastSearch)) {
+        		if(h.groups.contains(s)) {
+        			items.add(h.description);
+                	ids.add(h.id);
+                	break;
+        		}
+        	}
+        	
         }
 	}
 
