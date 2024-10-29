@@ -128,7 +128,7 @@ public class HomePage {
         Button update = new Button("Update User Roles");
         
 
-        
+        //wrapping VBoxes for spacing
         VBox reswrap = new VBox();
         reswrap.setSpacing(5);
         reswrap.getChildren().addAll(reset,resetField);

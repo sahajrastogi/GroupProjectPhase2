@@ -280,12 +280,14 @@ public class App extends Application {
         });
         
         
+        //set article button action for home page
         homePage.articles.setOnAction(e -> {
         	System.out.println("Going to ArticlePage");
     		primaryStage.setTitle(arPage.title);
         	primaryStage.setScene(arPage.scene);
         });
         
+        //set back button action on article page
         arPage.back.setOnAction(e->{
 			//homePage.setSceneFromRole();
         	primaryStage.setTitle(homePage.title);
@@ -295,8 +297,8 @@ public class App extends Application {
     	primaryStage.setTitle("Welcome Page");
         primaryStage.setScene(initPage.scene); // Start with welcome page
         
-        primaryStage.setTitle(arPage.title);
-    	primaryStage.setScene(arPage.scene);
+//        primaryStage.setTitle(arPage.title);
+//    	primaryStage.setScene(arPage.scene);
     	
         primaryStage.show();
         

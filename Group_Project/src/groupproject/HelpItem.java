@@ -8,7 +8,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class HelpItem {
+	//ensures no double assignment of ID
 	public static int maxId = 0;
+	
+	//Help Item fields
 	public int id;
 	public String title;
 	public String description;
@@ -17,6 +20,9 @@ public class HelpItem {
 	public ArrayList<String> links;
 	public ArrayList<String> groups;
 	
+	/**
+	 * Default Help Item constructor
+	 */
 	public HelpItem() {
 		id = -1;
 		title = ""; description = ""; body = "";
@@ -25,6 +31,9 @@ public class HelpItem {
 		groups = new ArrayList<String>();
 	}
 	
+	/**
+	 * Debugging helper function
+	 */
 	public void print() {
 		System.out.println("ID: " + id);
 		System.out.println("Title: " + title);
@@ -34,6 +43,12 @@ public class HelpItem {
 		System.out.println("Links: " + listToString(links));
 		System.out.println("Groups: " + listToString(groups));
 	}
+	
+	/**
+	 * Converts a list to string for writing to a file
+	 * @param a - input list
+	 * @return string
+	 */
 	public static String listToString(ArrayList<String> a) {
 		String res = "";
 		for (String s : a) {
@@ -45,12 +60,35 @@ public class HelpItem {
 		return res.substring(0,res.length()-1);
 	}
 	
+	/**
+	 * Converts a string to list for reading from a file
+	 * @param a - input string
+	 * @return list
+	 */
+	public static ArrayList<String> stringToList(String a) {
+		if(a.equals("") || a.equals(" ")) {
+			return new ArrayList<String>();
+		}
+		String[] list = a.split(",");
+		return new ArrayList<>(Arrays.asList(list));
+	}
+	
+	/**
+	 * Converts a user inputed string a list for assignment
+	 * @param a
+	 * @return list
+	 */
 	public static ArrayList<String> prettyStringToList(String a) {
 		ArrayList<String> res = new ArrayList<>(Arrays.asList(a.split(",")));
 		for(int i=0;i<res.size();i++) res.set(i, res.get(i).trim());
 		return res;
 	}	
 	
+	/**
+	 * Converts a list to a nicely printed string for the user to see
+	 * @param a - input list
+	 * @return string
+	 */
 	public static String listToStringPretty(ArrayList<String> a) {
 		String res = "";
 		for (String s : a) {
@@ -62,14 +100,16 @@ public class HelpItem {
 		return res.substring(0,res.length()-2);
 	}
 	
-	public static ArrayList<String> stringToList(String a) {
-		if(a.equals("") || a.equals(" ")) {
-			return new ArrayList<String>();
-		}
-		String[] list = a.split(",");
-		return new ArrayList<>(Arrays.asList(list));
-	}
-	
+	/**
+	 * Adds a HelpItem to the global list
+	 * @param ti - title field
+	 * @param desc - description field
+	 * @param bo - body field
+	 * @param ke - keyword field
+	 * @param li - link field
+	 * @param gr - group field
+	 * @return
+	 */
 	public static int add(String ti, String desc, String bo, String ke, String li, String gr) {
 		HelpItem h = new HelpItem();
 		maxId++;
@@ -83,6 +123,13 @@ public class HelpItem {
 		App.items.add(h);
 		return maxId;
 	}
+	
+	/**
+	 * Backups a group of articles to a given file
+	 * @param fileName - name of file
+	 * @param groupName - name of group
+	 * @throws Exception for file input and output
+	 */
 	public static void backup(String fileName, String groupName) throws Exception {
 		try (FileWriter fW = new FileWriter(fileName)) {
 			
@@ -99,6 +146,12 @@ public class HelpItem {
 		}
 	}
 	
+	/**
+	 * Restores a group of help items from a given file name
+	 * @param fileName - name of file
+	 * @param merge - whether or not to clear or merge
+	 * @throws Exception for file input and output
+	 */
 	public static void restore(String fileName, boolean merge) throws Exception {
         try(BufferedReader br = new BufferedReader( new FileReader(fileName))){
         	if(!merge) {
@@ -122,6 +175,11 @@ public class HelpItem {
         }
 	}
 	
+	/**
+	 * Check whether the global list contains a certain ID
+	 * @param x
+	 * @return boolean
+	 */
 	public static boolean containsID(int x) {
 		for(HelpItem h : App.items) {
 			if(h.id == x) return true;
@@ -129,6 +187,10 @@ public class HelpItem {
 		return false;
 	}
 	
+	/**
+	 * Removes an element from the global list from its ID
+	 * @param id
+	 */
 	public static void removeByID(int id) {
 		for(HelpItem h : App.items) {
 			if(h.id == id) {
@@ -138,6 +200,11 @@ public class HelpItem {
 		}
 	}
 	
+	/**
+	 * Returns a help item from the list from its ID
+	 * @param id
+	 * @return help item
+	 */
 	public static HelpItem itemByID(int id) {
 		for(HelpItem h : App.items) {
 			if(h.id == id) {
