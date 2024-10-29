@@ -40,7 +40,7 @@ public class ArticlePage {
 	public String title = "Help Item List";
 	public Button back;
 	
-	public User u;
+	public String role;
 	
     public TextField userField;
     public PasswordField passwordField;
@@ -48,8 +48,25 @@ public class ArticlePage {
     public String lastSearch = "";
     
     //List View of articles
-    ObservableList<String> items = FXCollections.observableArrayList();
-    ArrayList<Integer> ids = new ArrayList<>();
+    public ObservableList<String> items = FXCollections.observableArrayList();
+    public ArrayList<Integer> ids = new ArrayList<>();
+    
+    
+    //Operation Buttons and containing VBox
+    public Button create = new Button("Create");
+    public Button view = new Button("View");
+    public Button delete = new Button("Delete");
+    public Button update = new Button("Update");
+    public Button backup = new Button("Backup");
+    public Button restore = new Button("Restore");
+
+    public VBox buttons = new VBox();
+    
+    //default empty display
+    public VBox display = new VBox();
+    //right column of this container gets updated on the button clicks
+    public HBox twoColumns = new HBox();
+
     
     /**
      * constructor that lays out the GUI
@@ -65,15 +82,7 @@ public class ArticlePage {
         updateList();
         ListView<String> itemList = new ListView<>(items);
         
-        //Operation Buttons and containing VBox
-        Button create = new Button("Create");
-        Button view = new Button("View");
-        Button delete = new Button("Delete");
-        Button update = new Button("Update");
-        Button backup = new Button("Backup");
-        Button restore = new Button("Restore");
-
-        VBox buttons = new VBox();
+        
         buttons.setSpacing(20);
         buttons.getChildren().addAll(view,create,update,delete,backup,restore);
         
@@ -95,11 +104,9 @@ public class ArticlePage {
         grid.add(back, 0, 20);
         
         
-        //default empty display
-        VBox display = new VBox();
         
-        //right column of this container gets updated on the button clicks
-        HBox twoColumns = new HBox();
+        
+        
         twoColumns.setSpacing(125);
         twoColumns.getChildren().addAll(grid,display);
         
@@ -449,7 +456,27 @@ public class ArticlePage {
         	
         }
 	}
-
+	
+	/**
+	 * ensures that students can only see the view button
+	 */
+//	public void updateBoxFromRole() {
+//		if(role.equals("Student")) {
+//			buttons.getChildren().clear();
+//	        buttons.getChildren().addAll(view);
+//		} else {
+//			buttons.getChildren().clear();
+//	        buttons.getChildren().addAll(view,create,update,delete,backup,restore);
+//
+//		}
+//	}
+	
+	/*
+	 * empties display upon reentry
+	 */
+	public void emptyDisplay() {
+        twoColumns.getChildren().set(1,display);
+	}
         
 	
 	

@@ -283,6 +283,9 @@ public class App extends Application {
         //set article button action for home page
         homePage.articles.setOnAction(e -> {
         	System.out.println("Going to ArticlePage");
+        	arPage.role = homePage.role;
+        	//arPage.updateBoxFromRole();
+        	arPage.emptyDisplay();
     		primaryStage.setTitle(arPage.title);
         	primaryStage.setScene(arPage.scene);
         });

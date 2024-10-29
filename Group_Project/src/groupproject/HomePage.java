@@ -306,7 +306,8 @@ public class HomePage {
         Label intro = new Label("Your name is " + u.preferredName + " and you are a " + role);
 
         grid.add(intro,0,0);
-        grid.add(logout,0,1);
+        grid.add(articles, 0, 1);
+        grid.add(logout,0,2);
         
         BorderPane totalPage = new BorderPane();
         totalPage.setCenter(grid);
@@ -327,7 +328,8 @@ public class HomePage {
         Label intro = new Label("Your name is " + u.preferredName + " and you are a " + role);
 
         grid.add(intro,0,0);
-        grid.add(logout,0,1);
+        grid.add(articles, 0, 1);
+        grid.add(logout,0,2);
         
         BorderPane totalPage = new BorderPane();
         totalPage.setCenter(grid);

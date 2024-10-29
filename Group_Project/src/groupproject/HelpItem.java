@@ -19,6 +19,7 @@ public class HelpItem {
 	public ArrayList<String> keywords;
 	public ArrayList<String> links;
 	public ArrayList<String> groups;
+	public String uniqueHeader;
 	
 	/**
 	 * Default Help Item constructor
@@ -29,6 +30,13 @@ public class HelpItem {
 		keywords = new ArrayList<String>();
 		links = new ArrayList<String>();
 		groups = new ArrayList<String>();
+	}
+	
+	/*
+	 * Generates a uniqueHeader for the HelpItem
+	 */
+	public void generateUniqueHeader() {
+		 uniqueHeader = id + description + groups.get(0);
 	}
 	
 	/**
