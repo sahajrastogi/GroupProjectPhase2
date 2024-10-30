@@ -1,0 +1,14 @@
+2
+Coding in Java
+How to Code in Java
+After your Java environment is setup, navigate to your main function. Inside you may write System.out.println("Hello World") for your first Java program. 
+Java,program,environment
+
+Java,code
+3
+Defining functions in python
+How do you define a function in python
+You can use the def keyword
+python
+
+code

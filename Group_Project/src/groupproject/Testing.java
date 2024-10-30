@@ -29,7 +29,30 @@ public class Testing extends Application{
 	 */
 
     public void start(Stage primaryStage) {
-		System.out.println("Username and Password Test Cases: \n");
+    	testPhase2();
+    }
+    
+    /*
+     * This method contains the calls for testing in Phase 2
+     */
+    public void testPhase2() {
+    	testAddCase("Coding", "How to Code", "Use an IDE", "" ,"" ,"code" );
+		testAddCase("Bad article", "to be removed in the future", "nothing here", "" ,"" ,"" );
+		testAddCase("Documenting", "How to Document", "Use comments, // for java", "java, comments" ,"www.document.org" ,"comment" );
+		testAddCase("Running Code", "How to run code", "Press the green run button", "run, code" ,"" ,"code" );
+		testContainCase(1,true);
+		testContainCase(5,false);
+		testContainCase(2,true);
+		testContainCase(4,true);
+		testRemovalCase(2,3);
+		testRemovalCase(5,3);
+    }
+    
+    /*
+     * This method contains the calls for testing in Phase 1
+     */
+    public void testPhase1() {
+    	System.out.println("Username and Password Test Cases: \n");
 		testUsernamePassword("user","password!","password!","Username must be at least 5 characters long");
 		testUsernamePassword("user!23","password!","password!","Username must only contain letters and numbers");
 		testUsernamePassword("user23","pass!","pass!","Password must be at least 8 characters long");
@@ -42,7 +65,6 @@ public class Testing extends Application{
 		System.out.println("--------------------------------------------------");
 		System.out.println("Login Response Test Cases: ");
 		testLogin();
-
     }
 	public static void main(String[] args) {
 		launch(args);
@@ -149,6 +171,63 @@ public class Testing extends Application{
 		System.out.println("--------------------------------------------------");
 		System.out.println("");
 
+	}
+	
+	
+	/*
+	 * This method runs an individual test case of adding a help item
+	 */
+	public void testAddCase(String a, String b, String c, String d, String e, String f) {
+		HelpItem.add(a, b, c, d, e, f);
+		HelpItem h = App.items.get(App.items.size()-1);
+		h.print();
+		if(h.title.equals(a) && h.description.equals(b) && h.body.equals(c) && h.keywords.equals(HelpItem.prettyStringToList(d)) && h.links.equals(HelpItem.prettyStringToList(e)) && h.groups.equals(HelpItem.prettyStringToList(f))) {
+			System.out.println("Test case passed");
+		} else {
+			System.out.println("Test case failed");
+		}
+		System.out.println("");
+		System.out.println("--------------------------------------------------");
+		System.out.println("");
+	}
+	
+	/*
+	 * This method runs and individual test case of testing containment
+	 */
+	public void testContainCase(int id, boolean expected) {
+		boolean x = HelpItem.containsID(id);
+		System.out.println("Test containment of id: " + id);
+		System.out.println("Result: " + x);
+		System.out.println("Expected: " + expected);
+		if(x == expected) {
+			System.out.println("Test case passed");
+		} else {
+			System.out.println("Test case failed");
+		}
+		System.out.println("");
+		System.out.println("--------------------------------------------------");
+		System.out.println("");
+	}
+	
+	/*
+	 * This method tests and individual case of removal of an article
+	 */
+	public void testRemovalCase(int id,int expectedSize) {
+		System.out.println("Test removal of id: " + id);
+		HelpItem.removeByID(id);
+		boolean x = HelpItem.containsID(id);
+		System.out.println("Containment Result: " + x);
+		System.out.println("Expected Containment Result: " + false);
+		System.out.println("Result Size: " + App.items.size());
+		System.out.println("Expected Size: " + expectedSize);
+		if(x == false && App.items.size()==expectedSize) {
+			System.out.println("Test case passed");
+		} else {
+			System.out.println("Test case failed");
+		}
+		System.out.println("");
+		System.out.println("--------------------------------------------------");
+		System.out.println("");
 	}
 	
 

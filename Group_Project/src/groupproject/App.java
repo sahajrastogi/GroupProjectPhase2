@@ -31,7 +31,7 @@ public class App extends Application {
 	 * ArrayList object for users
 	 */
 	public static ArrayList<User> users;
-	public static ArrayList<HelpItem> items;
+	public static ArrayList<HelpItem> items = new ArrayList<HelpItem>();; 
 	public static ArrayList<String> groups;
     
 	/**
@@ -69,7 +69,7 @@ public class App extends Application {
     	}
     	
     	//initialize help items
-    	items = new ArrayList<HelpItem>();
+    	//items = new ArrayList<HelpItem>();
 //    	HelpItem h = new HelpItem();
 //    	h.id = 1; h.title = "Eating"; h.description = "How to Eat"; h.body = "You put the food into your mouth.";
 //    	h.keywords = new ArrayList<>(Arrays.asList("eat","food","mouth"));
