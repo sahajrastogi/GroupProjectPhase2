@@ -300,7 +300,7 @@ public class App extends Application {
     	primaryStage.setTitle("Welcome Page");
         primaryStage.setScene(initPage.scene); // Start with welcome page
         
-//        primaryStage.setTitle(arPage.title);
+//      primaryStage.setTitle(arPage.title);
 //    	primaryStage.setScene(arPage.scene);
     	
         primaryStage.show();

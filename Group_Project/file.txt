@@ -1,7 +1,7 @@
 1
 Eating
 How to Eat
-You put the food into your mouth.
+You put the food into your mouth. Afterwards you have to chew until the morsel size is small enough for you to swallow.
 eat,food,mouth
 
 eat,food
