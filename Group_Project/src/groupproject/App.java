@@ -2,6 +2,7 @@ package groupproject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -12,7 +13,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
- 
+
 
 /**
  * <p> App class for JavaFX </p>
@@ -33,7 +34,11 @@ public class App extends Application {
 	public static ArrayList<User> users;
 	public static ArrayList<HelpItem> items = new ArrayList<HelpItem>();; 
 	public static ArrayList<String> groups;
-    
+	//maps from username to view or admin rights over groups
+    public static HashMap<String,ArrayList<String>> viewMap = new HashMap<>();
+    public static HashMap<String,ArrayList<String>> adminMap = new HashMap<>();
+
+	
 	/**
 	 * main method to launch the JavaFX app
 	 * 
@@ -48,7 +53,7 @@ public class App extends Application {
 	 * The initial user is created and the application flow is implemented
 	 */
     public void start(Stage primaryStage) {
-    	
+
     	// init users, along with a special case for the first user who is an admin    	
     	users = new ArrayList<User>();
     	User first = new User();
@@ -63,6 +68,8 @@ public class App extends Application {
 	    	convenience.password = "a".toCharArray();
 	    	convenience.username = ("a" + i);
 	    	convenience.isAdmin = true;
+	    	convenience.isInstructor = true;
+	    	convenience.isStudent = true;
 	    	convenience.infoSetup = true;
 	    	convenience.passwordIsInviteCode = false;
 	    	users.add(convenience);
@@ -86,14 +93,22 @@ public class App extends Application {
 //    	
     	try {
 			HelpItem.restore("file.txt", false);
-			items.get(1).print();
+			//items.get(1).print();
 			//System.out.println(items.get(0).links.size());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 //    	
-
+    	for(User u : users) {
+    		viewMap.put(u.username,new ArrayList<String>());
+    		adminMap.put(u.username,new ArrayList<String>());
+    	}
+    	for(User u : users) {
+    		if(u.username.equals("a1")) continue;
+    		viewMap.get(u.username).add("general");
+    		adminMap.get(u.username).add("general");
+    	}
     	
     	System.out.println("ASU Hello World!");
     	System.out.println("It started!");
@@ -284,8 +299,10 @@ public class App extends Application {
         homePage.articles.setOnAction(e -> {
         	System.out.println("Going to ArticlePage");
         	arPage.role = homePage.role;
-        	//arPage.updateBoxFromRole();
+        	arPage.u = homePage.u;
+        	arPage.updateList();
         	arPage.emptyDisplay();
+        	arPage.updateBoxFromRole();
     		primaryStage.setTitle(arPage.title);
         	primaryStage.setScene(arPage.scene);
         });
@@ -299,8 +316,7 @@ public class App extends Application {
         // display welcome page
     	primaryStage.setTitle("Welcome Page");
         primaryStage.setScene(initPage.scene); // Start with welcome page
-        
-//      primaryStage.setTitle(arPage.title);
+//        primaryStage.setTitle(arPage.title);
 //    	primaryStage.setScene(arPage.scene);
     	
         primaryStage.show();
@@ -326,6 +342,22 @@ public class App extends Application {
     		}
     	}
     	return false;
+    }
+    
+    public static boolean checkAdminAccess(String username, String group) {
+    	return adminMap.get(username).contains(group.trim());
+    }
+    public static void viewMapAdd(String username, String group) {
+    	if(!viewMap.get(username).contains(group.trim())) viewMap.get(username).add(group.trim());
+    }
+    public static void adminMapAdd(String username, String group) {
+    	if(!adminMap.get(username).contains(group.trim())) adminMap.get(username).add(group.trim());
+    }
+    public static void viewMapRemove(String username, String group) {
+    	if(viewMap.get(username).contains(group.trim())) viewMap.get(username).remove(group.trim());
+    }
+    public static void adminMapRemove(String username, String group) {
+    	if(adminMap.get(username).contains(group.trim())) adminMap.get(username).remove(group.trim());
     }
     
 

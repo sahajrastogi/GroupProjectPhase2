@@ -4,11 +4,15 @@ How to Code in C++
 After your C++ environment is setup, navigate to your main function. Inside you may write cout << "Hello World!"; for your first C++ program. Make sure you have #include <iostream> at the top for input and output.
 C++,include,input,output
 
-code,C++,program
+code,C++,program,general
+Beginner
+Jack
 2
 Coding in Java
 How to Code in Java
 After your Java environment is setup, navigate to your main function. Inside you may write System.out.println("Hello World") for your first Java program. 
 Java,program,environment
 
-Java,code
+Java,code,general
+Beginner
+Jill

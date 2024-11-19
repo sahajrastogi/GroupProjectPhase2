@@ -17,6 +17,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
@@ -41,11 +42,14 @@ public class ArticlePage {
 	public Button back;
 	
 	public String role;
-	
+	public User u;
     public TextField userField;
     public PasswordField passwordField;
     public PasswordField cPasswordField;
-    public String lastSearch = "";
+    
+    public String lastGroup = "";
+    public String lastSearchText = "";
+    public String lastLevel = "All";
     
     //List View of articles
     public ObservableList<String> items = FXCollections.observableArrayList();
@@ -72,6 +76,8 @@ public class ArticlePage {
      * constructor that lays out the GUI
      */
 	public ArticlePage() {
+		if(u == null) u = App.users.get(0);
+		role = "admin";
 		GridPane grid = new GridPane();
 	    grid.setPadding(new Insets(10, 10, 10, 10));
 		
@@ -88,22 +94,35 @@ public class ArticlePage {
         
         
         //Search Buttons and containers
-        Label searchLabel = new Label("Search by group:    ");
-        TextField searchField = new TextField();
-        HBox searchBox = new HBox();
-        searchBox.getChildren().addAll(searchLabel, searchField);
+        Label searchGroupLabel = new Label("Group Specifier:        ");
+        TextField searchGroupField = new TextField();
+        searchGroupField.setPromptText("Leave empty for none");
+        HBox searchGroupBox = new HBox();
+        searchGroupBox.getChildren().addAll(searchGroupLabel, searchGroupField);
         Button search = new Button("Search");
         GridPane.setHalignment(search, HPos.RIGHT);
         
+        Label searchTextLabel = new Label("Search:                      ");
+        TextField searchTextField = new TextField();
+
+        HBox searchTextBox = new HBox();
+        searchTextBox.getChildren().addAll(searchTextLabel, searchTextField);
+        
+        
+        ChoiceBox<String> searchLevelBox = new ChoiceBox<>();
+        searchLevelBox.setValue("All");
+        searchLevelBox.getItems().addAll("Beginner", "Intermediate", "Advanced","All");
+        GridPane.setHalignment(searchLevelBox, HPos.RIGHT);
+
         //Add containers to the main page
-        grid.add(searchBox, 0, 0);
-        grid.add(search, 0, 1);
+        grid.add(searchTextBox, 0, 0);
+        grid.add(searchGroupBox, 0, 1);
+        grid.add(searchLevelBox, 0, 2);
+        grid.add(search, 0, 3);
         grid.add(helpItemListLabel, 0, 4);
         grid.add(itemList, 0, 5);
         grid.add(buttons, 1, 5);
         grid.add(back, 0, 20);
-        
-        
         
         
         
@@ -117,6 +136,7 @@ public class ArticlePage {
         //display labels for view button
         Label titleLabel = new Label("Title: ");
         Label descriptionLabel = new Label("Description: ");
+        Label authorLabel = new Label("Author: ");
         Label bodyLabel = new Label("Body: ");
         Label keywordsLabel = new Label("Keywords: ");
         Label groupLabel = new Label("Groups: ");
@@ -131,12 +151,20 @@ public class ArticlePage {
             
             //Set field values and display containers
         	viewDisplay.getChildren().clear();
-            viewDisplay.getChildren().addAll(new Label(),titleLabel, descriptionLabel, bodyLabel, keywordsLabel, linkLabel, groupLabel);
+            viewDisplay.getChildren().addAll(new Label(),titleLabel, descriptionLabel, authorLabel, bodyLabel, keywordsLabel, linkLabel, groupLabel);
 
-        	HelpItem h = App.items.get(idx);
+            
+            int uniq = ids.get(idx);
+            HelpItem h = null;
+        	for(HelpItem htemp : App.items) {
+        		if(htemp.id == uniq) h = htemp;
+        	}
+        	if(h == null) return;
         	titleLabel.setText("Title: " + h.title);
         	descriptionLabel.setText("Description: " + h.description);
-        	bodyLabel.setText("Body: " + h.body);
+        	authorLabel.setText("Author(s): " + h.author);
+        	if(!role.equals("Admin")) bodyLabel.setText("Body: " + h.body);
+        	else bodyLabel.setText("Body: " + "You are not allowed to see the body of this article.");
         	keywordsLabel.setText("Keywords: " + HelpItem.listToStringPretty(h.keywords));
         	linkLabel.setText("Links: " + HelpItem.listToStringPretty(h.links));
         	groupLabel.setText("Groups: " + HelpItem.listToStringPretty(h.groups));            
@@ -167,10 +195,14 @@ public class ArticlePage {
         //Entry fields for creating and updating help items
         TextField titleEntry = new TextField();
         TextField descriptionEntry = new TextField();
+        TextField authorEntry = new TextField();
         TextArea bodyEntry = new TextArea();
         TextField keywordsEntry = new TextField();
         TextField linkEntry = new TextField();
         TextField groupEntry = new TextField();
+        ChoiceBox<String> choiceBox = new ChoiceBox<>();
+        choiceBox.setValue("Beginner");
+        choiceBox.getItems().addAll("Beginner", "Intermediate", "Advanced");
         keywordsEntry.setPromptText("Enter a comma-separated list");
     	linkEntry.setPromptText("Enter a comma-separated list");
     	groupEntry.setPromptText("Enter a comma-separated list");
@@ -190,8 +222,35 @@ public class ArticlePage {
         		alert.showAndWait();
         		return;
 	    	}
+	    	
+	    	for(String g : HelpItem.prettyStringToList(groupEntry.getText())) {
+	    		boolean exists = false;
+	    		for(User us : App.users) {
+	    			if(App.checkAdminAccess(us.username, g)) {
+	    				exists = true;
+	    			}
+	    		}
+	    		if(!exists) {
+	    			App.adminMapAdd(u.username, g);
+	    			App.viewMapAdd(u.username, g);
+	    		}
+	    	}
+	    	
+	    	boolean flag = false;
+	    	for(String g : HelpItem.prettyStringToList(groupEntry.getText())) {
+	    		if(!App.checkAdminAccess(u.username,g)) {
+	    			Alert alert = new Alert(AlertType.ERROR);
+	        		alert.setHeaderText("Error");
+	        		alert.setContentText("You don't have admin access for this group");
+	        		flag = true;
+	        		alert.showAndWait();
+	        		break;
+	    		}
+	    	}
+	    	if(flag) return;
+	    	
 	    	//Add the help item to the global array
-	    	HelpItem.add(titleEntry.getText(), descriptionEntry.getText(), bodyEntry.getText(), keywordsEntry.getText(), linkEntry.getText(), groupEntry.getText());
+	    	HelpItem.add(titleEntry.getText(), descriptionEntry.getText(), bodyEntry.getText(), keywordsEntry.getText(), linkEntry.getText(), groupEntry.getText(),choiceBox.getSelectionModel().getSelectedItem(),authorEntry.getText());
 	    	updateList();
 	    });
         
@@ -203,6 +262,7 @@ public class ArticlePage {
     	    fieldGrid.getChildren().clear();
         	titleEntry.setPrefHeight(12);
         	descriptionEntry.setPrefHeight(12);
+        	authorEntry.setPrefHeight(12);
         	bodyEntry.setPrefHeight(100);
         	bodyEntry.setMaxHeight(400);
         	bodyEntry.setWrapText(true);
@@ -214,11 +274,13 @@ public class ArticlePage {
         	//Add fields to container
         	fieldGrid.add(titleLabel, 0, 0); fieldGrid.add(titleEntry, 1, 0);
         	fieldGrid.add(descriptionLabel, 0, 1); fieldGrid.add(descriptionEntry, 1, 1);
-        	fieldGrid.add(bodyLabel, 0, 2); fieldGrid.add(bodyEntry, 1, 2);	
-        	fieldGrid.add(keywordsLabel, 0, 3); fieldGrid.add(keywordsEntry, 1, 3);	
-        	fieldGrid.add(linkLabel, 0, 4); fieldGrid.add(linkEntry, 1, 4);	
-        	fieldGrid.add(groupLabel, 0, 5); fieldGrid.add(groupEntry, 1, 5);	
-        	fieldGrid.add(createButton, 1, 6);
+        	fieldGrid.add(authorLabel,0,2); fieldGrid.add(authorEntry,1,2);
+        	fieldGrid.add(bodyLabel, 0, 3); fieldGrid.add(bodyEntry, 1, 3);	
+        	fieldGrid.add(keywordsLabel, 0, 4); fieldGrid.add(keywordsEntry, 1, 4);	
+        	fieldGrid.add(linkLabel, 0, 5); fieldGrid.add(linkEntry, 1, 5);	
+        	fieldGrid.add(groupLabel, 0, 6); fieldGrid.add(groupEntry, 1, 6);
+        	fieldGrid.add(choiceBox, 1, 7);
+        	fieldGrid.add(createButton, 1, 8);
         	
         	//Set field alignments
         	GridPane.setHalignment(titleLabel, HPos.RIGHT);
@@ -240,6 +302,7 @@ public class ArticlePage {
         	keywordsLabel.setText("Keywords: ");
         	linkLabel.setText("Links: ");
         	groupLabel.setText("Groups: ");
+        	authorLabel.setText("Author(s): ");
         	
         	titleEntry.clear();
         	descriptionEntry.clear();
@@ -247,7 +310,7 @@ public class ArticlePage {
         	keywordsEntry.clear();
         	linkEntry.clear();
         	groupEntry.clear();
-        	
+        	authorEntry.clear();
         	
 
         	//update main display
@@ -276,16 +339,18 @@ public class ArticlePage {
         	keywordsEntry.setPrefHeight(12);
         	linkEntry.setPrefHeight(12);
         	groupEntry.setPrefHeight(12);
+        	authorEntry.setPrefHeight(12);
 
 
         	//Add fields to container
         	fieldGrid.add(titleLabel, 0, 0); fieldGrid.add(titleEntry, 1, 0);
         	fieldGrid.add(descriptionLabel, 0, 1); fieldGrid.add(descriptionEntry, 1, 1);
-        	fieldGrid.add(bodyLabel, 0, 2); fieldGrid.add(bodyEntry, 1, 2);	
-        	fieldGrid.add(keywordsLabel, 0, 3); fieldGrid.add(keywordsEntry, 1, 3);	
-        	fieldGrid.add(linkLabel, 0, 4); fieldGrid.add(linkEntry, 1, 4);	
-        	fieldGrid.add(groupLabel, 0, 5); fieldGrid.add(groupEntry, 1, 5);	
-        	fieldGrid.add(updateButton, 1, 6);
+        	fieldGrid.add(authorLabel,0,2); fieldGrid.add(authorEntry,1,2);
+        	fieldGrid.add(bodyLabel, 0, 3); fieldGrid.add(bodyEntry, 1, 3);	
+        	fieldGrid.add(keywordsLabel, 0, 4); fieldGrid.add(keywordsEntry, 1, 4);	
+        	fieldGrid.add(linkLabel, 0, 5); fieldGrid.add(linkEntry, 1, 5);	
+        	fieldGrid.add(groupLabel, 0, 6); fieldGrid.add(groupEntry, 1, 6);	
+        	fieldGrid.add(updateButton, 1, 7);
         	
         	//Set field alignments
         	GridPane.setHalignment(titleLabel, HPos.RIGHT);
@@ -309,25 +374,62 @@ public class ArticlePage {
         	keywordsLabel.setText("Keywords: ");
         	linkLabel.setText("Links: ");
         	groupLabel.setText("Groups: ");
+        	authorLabel.setText("Author(s): ");
+
         	
         	titleEntry.setText(h.title);
         	descriptionEntry.setText(h.description);
-        	bodyEntry.setText(h.body);
+        	if(!role.equals("Admin")) bodyEntry.setText(h.body);
+        	else bodyEntry.setText("You are not allowed to see the body of this article.");
+        	//bodyEntry.setText(h.body);
         	keywordsEntry.setText(HelpItem.listToStringPretty(h.keywords));
         	linkEntry.setText(HelpItem.listToStringPretty(h.links));
         	groupEntry.setText(HelpItem.listToStringPretty(h.groups));
+        	authorEntry.setText(h.author);
+
         	
         	twoColumns.getChildren().set(1, updateDisplay);
 
         	//on click action for the update button inside the container
         	updateButton.setOnAction(event->{
+        		
+        		for(String g : HelpItem.prettyStringToList(groupEntry.getText())) {
+    	    		boolean exists = false;
+    	    		for(User us : App.users) {
+    	    			if(App.checkAdminAccess(us.username, g)) {
+    	    				exists = true;
+    	    			}
+    	    		}
+    	    		if(!exists) {
+    	    			App.adminMapAdd(u.username, g);
+    	    			App.viewMapAdd(u.username, g);
+    	    		}
+    	    		System.out.println(g + " " + exists);
+    	    	}
+    	    	
+    	    	boolean flag = false;
+    	    	for(String g : HelpItem.prettyStringToList(groupEntry.getText())) {
+    	    		if(!App.checkAdminAccess(u.username,g)) {
+    	    			Alert alert = new Alert(AlertType.ERROR);
+    	        		alert.setHeaderText("Error");
+    	        		alert.setContentText("You don't have admin access for this group");
+    	        		flag = true;
+    	        		alert.showAndWait();
+    	        		break;
+    	    		}
+    	    	}
+    	    	if(flag) return;
+    	    	
             	h.title = titleEntry.getText();
             	h.description = descriptionEntry.getText();
-            	h.body = bodyEntry.getText();
+            	if(!role.equals("Admin")) h.body = bodyEntry.getText();
             	h.keywords = HelpItem.prettyStringToList(keywordsEntry.getText());
             	h.links = HelpItem.prettyStringToList(linkEntry.getText());
             	h.groups = HelpItem.prettyStringToList(groupEntry.getText());
-            	items.set(idx, h.description);
+            	h.author = authorEntry.getText();
+            	updateList();
+            	//items.set(idx, h.description);
+            	
             });
         });
         
@@ -410,17 +512,18 @@ public class ArticlePage {
         	}catch(Exception ex) {
         		Alert alert = new Alert(AlertType.ERROR);
         		alert.setHeaderText("Error");
-        		alert.setContentText("Invalid file name");
+        		alert.setContentText("Invalid file nafme");
         		alert.showAndWait();
         	}
         });
         
-        //on click action for the serach button
+        //on click action for the search button
         search.setOnAction(e->{
-        	lastSearch = searchField.getText().trim();
-        	System.out.println(lastSearch);
-        	System.out.println(lastSearch.length());
-
+        	lastGroup = searchGroupField.getText().trim();
+        	lastSearchText = searchTextField.getText().trim();
+        	lastLevel = searchLevelBox.getSelectionModel().getSelectedItem();
+//        	System.out.println(lastGroup);
+//        	System.out.println(lastGroup.length());
         	updateList();
         });
         
@@ -430,46 +533,82 @@ public class ArticlePage {
         BorderPane.setMargin(twoColumns, new Insets(100));
         twoColumns.setAlignment(Pos.CENTER);
         scene = new Scene(totalPage, App.WIDTH, App.HEIGHT);
+
 	}
 
 	
 	/**
 	 * Updates the list view of articles based on the most recent search parameters
 	 */
-	private void updateList() {
+	public void updateList() {
 		items.clear();
 		ids.clear();
 		
-        for(HelpItem h : App.items) {
-    		if(lastSearch.equals("")) {
-    			items.add(h.description);
-            	ids.add(h.id);
-            	continue;
-    		}
-        	for(String s : HelpItem.prettyStringToList(lastSearch)) {
-        		if(h.groups.contains(s)) {
-        			items.add(h.description);
-                	ids.add(h.id);
-                	break;
-        		}
-        	}
-        	
-        }
+		ArrayList<HelpItem> checkList = new ArrayList<>();
+		
+		if(lastGroup.equals("")) {
+			for(String group : App.viewMap.get(u.username)) {
+				//System.out.println(group);
+				for(HelpItem h : App.items) {
+					if(h.groups.contains(group) && !checkList.contains(h)) {
+						checkList.add(h);
+					}
+				}
+			}
+		} else {
+			for(HelpItem h : App.items) {
+				if(h.groups.contains(lastGroup) && !checkList.contains(h)) {
+					checkList.add(h);
+				}
+			}
+		}
+
+		//System.out.println(checkList.size());
+
+
+		ArrayList<HelpItem> checkListTemp = new ArrayList<>(checkList);
+		if(!lastLevel.equals("All")) {
+	        for(HelpItem h : checkList) {
+	        	if(!h.level.equals(lastLevel)) checkListTemp.remove(h);
+	        }
+		}
+		checkList = new ArrayList<>(checkListTemp);
+
+		if(!lastSearchText.trim().equals("")) {
+			for(HelpItem h : checkList) {
+				int x=-1;
+				try {
+					x = Integer.parseInt(lastSearchText);
+				}catch(Exception e) {
+					x = -1;
+				}
+				if(!(h.title.contains(lastSearchText) || h.description.contains(lastSearchText) || h.author.contains(lastSearchText) || x == h.id)) {
+					checkListTemp.remove(h);
+				}
+			}
+		}
+		checkList = new ArrayList<>(checkListTemp);
+
+		for(HelpItem h : checkList) {
+			items.add("#" + Integer.toString(h.id) + ": " + h.title + " by " + h.author);
+			ids.add(h.id);
+		}
+
 	}
 	
 	/**
 	 * ensures that students can only see the view button
 	 */
-//	public void updateBoxFromRole() {
-//		if(role.equals("Student")) {
-//			buttons.getChildren().clear();
-//	        buttons.getChildren().addAll(view);
-//		} else {
-//			buttons.getChildren().clear();
-//	        buttons.getChildren().addAll(view,create,update,delete,backup,restore);
-//
-//		}
-//	}
+	public void updateBoxFromRole() {
+		if(role.equals("Student")) {
+			buttons.getChildren().clear();
+	        buttons.getChildren().addAll(view);
+		} else {
+			buttons.getChildren().clear();
+	        buttons.getChildren().addAll(view,create,update,delete,backup,restore);
+	        view.setStyle("-fx-text-base-color: black;");
+		}
+	}
 	
 	/*
 	 * empties display upon reentry

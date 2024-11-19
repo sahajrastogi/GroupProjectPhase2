@@ -188,7 +188,7 @@ public class Testing extends Application{
 	 * This method runs an individual test case of adding a help item
 	 */
 	public void testAddCase(String a, String b, String c, String d, String e, String f) {
-		HelpItem.add(a, b, c, d, e, f);
+		HelpItem.add(a, b, c, d, e, f,"Beginner","hi");
 		HelpItem h = App.items.get(App.items.size()-1);
 		h.print();
 		if(h.title.equals(a) && h.description.equals(b) && h.body.equals(c) && h.keywords.equals(HelpItem.prettyStringToList(d)) && h.links.equals(HelpItem.prettyStringToList(e)) && h.groups.equals(HelpItem.prettyStringToList(f))) {

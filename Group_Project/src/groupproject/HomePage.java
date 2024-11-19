@@ -127,6 +127,16 @@ public class HomePage {
         CheckBox updAdmin = new CheckBox("Admin");
         Button update = new Button("Update User Roles");
         
+        Label groupLabel = new Label("Group:   ");
+        TextField groupField = new TextField();
+        HBox groupBox = new HBox();
+        groupBox.getChildren().addAll(groupLabel, groupField);
+        Button addViewer = new Button("Add Viewer");
+        Button addAdmin = new Button("Add Admin");
+        Button removeAccess = new Button("Remove Access");
+        VBox accessGroup = new VBox();
+        accessGroup.getChildren().addAll(groupBox, addViewer, addAdmin, removeAccess);
+        accessGroup.setSpacing(5);
 
         //wrapping VBoxes for spacing
         VBox reswrap = new VBox();
@@ -142,8 +152,8 @@ public class HomePage {
         vbox.getChildren().addAll(checkStudent, checkInstructor,checkAdmin);
         
         VBox editUser = new VBox();
-        editUser.setSpacing(40);
-        editUser.getChildren().addAll(del,reswrap,upd, update);
+        editUser.setSpacing(30);
+        editUser.getChildren().addAll(del,reswrap,upd, update,accessGroup);
         
         
         // list selection handling
@@ -155,6 +165,42 @@ public class HomePage {
         		updAdmin.setSelected(us.isAdmin);
         		updInstructor.setSelected(us.isInstructor);
         	}
+        });
+        
+        
+        addViewer.setOnAction(e->{
+        	if(groupField.getText().length() > 0 && !App.checkAdminAccess(u.username, groupField.getText())) {
+        		Alert alert = new Alert(AlertType.ERROR);
+           		alert.setHeaderText("Error");
+           		alert.setContentText("You don't have admin access to this group");
+           		alert.showAndWait();
+        		return;
+        	}
+        	//System.out.println("hi");
+        	App.viewMapAdd(userList.getSelectionModel().getSelectedItem(), groupField.getText());
+        	//System.out.println(App.viewMap.get(u.username).contains(groupField.getText()));
+        });
+        addAdmin.setOnAction(e->{
+        	if(groupField.getText().length() > 0 && !App.checkAdminAccess(u.username, groupField.getText())) {
+        		Alert alert = new Alert(AlertType.ERROR);
+           		alert.setHeaderText("Error");
+           		alert.setContentText("You don't have admin access to this group");
+           		alert.showAndWait();
+        		return;
+        	}
+        	App.adminMapAdd(userList.getSelectionModel().getSelectedItem(), groupField.getText());
+        });
+        removeAccess.setOnAction(e->{
+        	if(groupField.getText().length() > 0 && !App.checkAdminAccess(u.username, groupField.getText())) {
+        		Alert alert = new Alert(AlertType.ERROR);
+           		alert.setHeaderText("Error");
+           		alert.setContentText("You don't have admin access to this group");
+           		alert.showAndWait();
+        		return;
+        	}
+        	App.viewMapRemove(userList.getSelectionModel().getSelectedItem(), groupField.getText());
+        	App.adminMapRemove(userList.getSelectionModel().getSelectedItem(), groupField.getText());
+
         });
         
        // deletion logic and confirmation
@@ -283,8 +329,8 @@ public class HomePage {
         	}
         });
 
-        grid.add(articles, 1, 15);
-        grid.add(logout,0,20);
+        grid.add(articles, 1, 12);
+        grid.add(logout,0,14);
         
         
         BorderPane totalPage = new BorderPane();
@@ -303,10 +349,10 @@ public class HomePage {
         
         grid.setVgap(10);
         grid.setHgap(10);
-        Label intro = new Label("Your name is " + u.preferredName + " and you are a " + role);
+       // Label intro = new Label("Your name is " + u.preferredName + " and you are a " + role);
 
-        grid.add(intro,0,0);
-        //grid.add(articles, 0, 1);
+        //grid.add(intro,0,0);
+        grid.add(articles, 0, 1);
         grid.add(logout,0,2);
         
         BorderPane totalPage = new BorderPane();
@@ -316,7 +362,7 @@ public class HomePage {
 	}
 	
 	/**
-	 * instructor view, just a role and username for now
+	 * Instructor view, just a role and username for now
 	 */
 	public void setInstructorScene() {
 
@@ -325,11 +371,79 @@ public class HomePage {
         
         grid.setVgap(10);
         grid.setHgap(10);
-        Label intro = new Label("Your name is " + u.preferredName + " and you are a " + role);
 
-        grid.add(intro,0,0);
-        grid.add(articles, 0, 1);
-        grid.add(logout,0,2);
+        
+        Label groupLabel = new Label("Group:   ");
+        TextField groupField = new TextField();
+        HBox groupBox = new HBox();
+        groupBox.getChildren().addAll(groupLabel, groupField);
+        Button addViewer = new Button("Add Viewer");
+        Button addAdmin = new Button("Add Admin");
+        Button removeAccess = new Button("Remove Access");
+        VBox accessGroup = new VBox();
+        accessGroup.getChildren().addAll(groupBox, addViewer, addAdmin, removeAccess);
+        accessGroup.setSpacing(5);
+        Label studentListLabel = new Label("Student List: ");
+        
+        ObservableList<String> items = FXCollections.observableArrayList();
+
+        
+        // Creating a ListView, show all registered users
+        for(User u : App.users) {
+        	if(!u.passwordIsInviteCode) {
+        		items.add(u.username);
+        	}
+        }
+        ListView<String> userList = new ListView<>(items);
+        
+//         list selection handling
+//        userList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+//        	int x = App.indexFromUsername(newValue);
+//        	if(x != -1) {
+// 
+//        	}
+//        });
+        
+        addViewer.setOnAction(e->{
+        	if(groupField.getText().length() > 0 && !App.checkAdminAccess(u.username, groupField.getText())) {
+        		Alert alert = new Alert(AlertType.ERROR);
+           		alert.setHeaderText("Error");
+           		alert.setContentText("You don't have admin access to this group");
+           		alert.showAndWait();
+        		return;
+        	}
+        	//System.out.println("hi");
+        	App.viewMapAdd(userList.getSelectionModel().getSelectedItem(), groupField.getText());
+        	//System.out.println(App.viewMap.get(u.username).contains(groupField.getText()));
+        });
+        addAdmin.setOnAction(e->{
+        	if(groupField.getText().length() > 0 && !App.checkAdminAccess(u.username, groupField.getText())) {
+        		Alert alert = new Alert(AlertType.ERROR);
+           		alert.setHeaderText("Error");
+           		alert.setContentText("You don't have admin access to this group");
+           		alert.showAndWait();
+        		return;
+        	}
+        	App.adminMapAdd(userList.getSelectionModel().getSelectedItem(), groupField.getText());
+        });
+        removeAccess.setOnAction(e->{
+        	if(groupField.getText().length() > 0 && !App.checkAdminAccess(u.username, groupField.getText())) {
+        		Alert alert = new Alert(AlertType.ERROR);
+           		alert.setHeaderText("Error");
+           		alert.setContentText("You don't have admin access to this group");
+           		alert.showAndWait();
+        		return;
+        	}
+        	App.viewMapRemove(userList.getSelectionModel().getSelectedItem(), groupField.getText());
+        	App.adminMapRemove(userList.getSelectionModel().getSelectedItem(), groupField.getText());
+
+        });
+        
+        grid.add(studentListLabel, 1, 7);
+        grid.add(userList, 1, 8);
+        grid.add(accessGroup, 2, 8);
+        grid.add(articles, 1, 10);
+        grid.add(logout,0,12);
         
         BorderPane totalPage = new BorderPane();
         totalPage.setCenter(grid);

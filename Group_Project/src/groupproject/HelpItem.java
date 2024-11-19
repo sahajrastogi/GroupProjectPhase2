@@ -20,6 +20,8 @@ public class HelpItem {
 	public ArrayList<String> links;
 	public ArrayList<String> groups;
 	public String uniqueHeader;
+	public String level;
+	public String author;
 	
 	/**
 	 * Default Help Item constructor
@@ -118,7 +120,7 @@ public class HelpItem {
 	 * @param gr - group field
 	 * @return
 	 */
-	public static int add(String ti, String desc, String bo, String ke, String li, String gr) {
+	public static int add(String ti, String desc, String bo, String ke, String li, String gr,String lvl,String author) {
 		HelpItem h = new HelpItem();
 		maxId++;
 		h.id = maxId;
@@ -128,6 +130,8 @@ public class HelpItem {
 		h.keywords = prettyStringToList(ke);
 		h.links = prettyStringToList(li);
 		h.groups = prettyStringToList(gr);
+		h.level = lvl;
+		h.author = author;
 		App.items.add(h);
 		return maxId;
 	}
@@ -150,6 +154,8 @@ public class HelpItem {
 				fW.write(listToString(h.keywords));fW.write("\n");
 				fW.write(listToString(h.links));fW.write("\n");
 				fW.write(listToString(h.groups));fW.write("\n");
+				fW.write((h.level));fW.write("\n");
+				fW.write(h.author);fW.write("\n");
 			}
 		}
 	}
@@ -175,8 +181,9 @@ public class HelpItem {
 		    	h.body = line;  line = br.readLine();
 		    	h.keywords = stringToList(line);  line = br.readLine();
 		    	h.links = stringToList(line);  line = br.readLine();
-		    	h.groups = stringToList(line);
-		    	
+		    	h.groups = stringToList(line); line = br.readLine();
+		    	h.level = line; line = br.readLine();
+		    	h.author = line;
 		    	if(!containsID(h.id)) App.items.add(h);
 		    	maxId = Math.max(maxId,h.id);
 		    }
