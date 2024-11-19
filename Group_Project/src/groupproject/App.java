@@ -347,6 +347,9 @@ public class App extends Application {
     public static boolean checkAdminAccess(String username, String group) {
     	return adminMap.get(username).contains(group.trim());
     }
+    public static boolean checkViewAccess(String username, String group) {
+    	return viewMap.get(username).contains(group.trim());
+    }
     public static void viewMapAdd(String username, String group) {
     	if(!viewMap.get(username).contains(group.trim())) viewMap.get(username).add(group.trim());
     }

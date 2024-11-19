@@ -54,8 +54,6 @@ public class Testing extends Application{
 		testAddCase("Running Code in C++ ", "How to run code in C++", "Use the g++ command", "run, code" ,"" ,"code" );
 		testContainCase(5,false);
 		testContainCase(6,true);
-
-
     }
     
     /*

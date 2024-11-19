@@ -1,5 +1,7 @@
 package groupproject;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -18,9 +20,11 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
@@ -346,14 +350,45 @@ public class HomePage {
 
 		GridPane grid = new GridPane();
 		grid.setPadding(new Insets(10, 10, 10, 10));
-        
         grid.setVgap(10);
         grid.setHgap(10);
-       // Label intro = new Label("Your name is " + u.preferredName + " and you are a " + role);
-
+        
+        Label helpSystemLabel = new Label("Enter a help system message: ");
+        TextArea helpSystemEntry = new TextArea();
+        helpSystemEntry.setPrefHeight(150);
+        ChoiceBox<String> helpSystemBox = new ChoiceBox<>();
+        helpSystemBox.getItems().addAll("Generic", "Specific");      // Label intro = new Label("Your name is " + u.preferredName + " and you are a " + role);
+        Button submitButton = new Button("Submit");
+        
         //grid.add(intro,0,0);
-        grid.add(articles, 0, 1);
-        grid.add(logout,0,2);
+        grid.add(helpSystemLabel, 0, 0);
+        grid.add(helpSystemEntry, 0, 1);
+        grid.add(helpSystemBox, 0, 2);
+        grid.add(submitButton, 0, 3);
+
+        submitButton.setOnAction(e->{
+        	String s = helpSystemBox.getSelectionModel().getSelectedItem();
+        	if(s == null || helpSystemEntry.getText().length() < 1) {
+        		Alert alert = new Alert(AlertType.ERROR);
+           		alert.setHeaderText("Error");
+           		alert.setContentText("Unfilled Entry(s)");
+           		alert.showAndWait();
+           		return;
+        	}
+        	
+        	try (FileWriter fW = new FileWriter("messages.txt", true)) {
+        		fW.write(u.username);fW.write("\n");
+        		fW.write(s);fW.write("\n");
+        		fW.write(helpSystemEntry.getText()); fW.write("\n");fW.write("\n");fW.write("\n");
+                System.out.println("Text appended successfully!");
+            } catch (IOException mes) {
+                System.out.println("An error occurred while writing to the file: " + mes.getMessage());
+            }
+        	
+        	
+        });
+        grid.add(articles, 0, 8);
+        grid.add(logout,0,10);
         
         BorderPane totalPage = new BorderPane();
         totalPage.setCenter(grid);
@@ -380,6 +415,8 @@ public class HomePage {
         Button addViewer = new Button("Add Viewer");
         Button addAdmin = new Button("Add Admin");
         Button removeAccess = new Button("Remove Access");
+        Button viewAccess = new Button("View User Access");
+        Label viewLabel = new Label("");
         VBox accessGroup = new VBox();
         accessGroup.getChildren().addAll(groupBox, addViewer, addAdmin, removeAccess);
         accessGroup.setSpacing(5);
@@ -438,6 +475,20 @@ public class HomePage {
         	App.adminMapRemove(userList.getSelectionModel().getSelectedItem(), groupField.getText());
 
         });
+        
+//        viewAccess.setOnAction(e->{
+//        	if(groupField.getText().length() > 0 && !App.checkAdminAccess(u.username, groupField.getText())) {
+//        		Alert alert = new Alert(AlertType.ERROR);
+//           		alert.setHeaderText("Error");
+//           		alert.setContentText("You don't have admin access to this group");
+//           		alert.showAndWait();
+//        		return;
+//        	}
+//        	viewLabel.setText("");
+//        	for(User u : App.users) {
+//        		if(App.viewMap.get(u).contains(groupField.getText()));
+//        	}
+//        });
         
         grid.add(studentListLabel, 1, 7);
         grid.add(userList, 1, 8);
