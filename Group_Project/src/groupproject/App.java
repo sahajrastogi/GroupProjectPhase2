@@ -59,6 +59,8 @@ public class App extends Application {
     	User first = new User();
     	first.password = "first".toCharArray();
     	first.isAdmin = true;
+    	first.isInstructor = true;
+    	first.isStudent = true;
     	users.add(first);
     	
     	//There are 100 dummy admin users with username a followed by a number and password a
