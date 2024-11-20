@@ -26,7 +26,7 @@ public class App extends Application {
 	 * window width and height constants
 	 */
 	public static final int WIDTH = 1200;
-	public static final int HEIGHT = 700;
+	public static final int HEIGHT = 750;
 	
 	/**
 	 * ArrayList object for users
@@ -63,7 +63,7 @@ public class App extends Application {
     	
     	//There are 100 dummy admin users with username a followed by a number and password a
     	// TODO not safe, can use to login as admin
-    	for(int i=0;i<100;i++) {
+    	for(int i=0;i<20;i++) {
 	    	User convenience = new User();
 	    	convenience.password = "a".toCharArray();
 	    	convenience.username = ("a" + i);
@@ -100,10 +100,8 @@ public class App extends Application {
 			e.printStackTrace();
 		}
 //    	
-    	for(User u : users) {
-    		viewMap.put(u.username,new ArrayList<String>());
-    		adminMap.put(u.username,new ArrayList<String>());
-    	}
+    	initMaps();
+    	
     	for(User u : users) {
     		if(u.username.equals("a1")) continue;
     		viewMap.get(u.username).add("general");
@@ -344,6 +342,12 @@ public class App extends Application {
     	return false;
     }
     
+    public static void initMaps() {
+    	for(User u : users) {
+    		viewMap.put(u.username,new ArrayList<String>());
+    		adminMap.put(u.username,new ArrayList<String>());
+    	}
+    }
     public static boolean checkAdminAccess(String username, String group) {
     	return adminMap.get(username).contains(group.trim());
     }

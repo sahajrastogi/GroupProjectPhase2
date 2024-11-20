@@ -138,9 +138,14 @@ public class HomePage {
         Button addViewer = new Button("Add Viewer");
         Button addAdmin = new Button("Add Admin");
         Button removeAccess = new Button("Remove Access");
+        Button viewAccess = new Button("View User Access");
+        Label viewLabel = new Label("");
+        viewLabel.setWrapText(true);
+        viewLabel.setMaxWidth(250);
         VBox accessGroup = new VBox();
-        accessGroup.getChildren().addAll(groupBox, addViewer, addAdmin, removeAccess);
+        accessGroup.getChildren().addAll(groupBox, addViewer, addAdmin, removeAccess,viewAccess);
         accessGroup.setSpacing(5);
+
 
         //wrapping VBoxes for spacing
         VBox reswrap = new VBox();
@@ -156,7 +161,7 @@ public class HomePage {
         vbox.getChildren().addAll(checkStudent, checkInstructor,checkAdmin);
         
         VBox editUser = new VBox();
-        editUser.setSpacing(30);
+        editUser.setSpacing(25);
         editUser.getChildren().addAll(del,reswrap,upd, update,accessGroup);
         
         
@@ -204,6 +209,24 @@ public class HomePage {
         	}
         	App.viewMapRemove(userList.getSelectionModel().getSelectedItem(), groupField.getText());
         	App.adminMapRemove(userList.getSelectionModel().getSelectedItem(), groupField.getText());
+
+        });
+        
+        viewAccess.setOnAction(e->{
+        	if(groupField.getText().length() > 0 && !App.checkAdminAccess(u.username, groupField.getText())) {
+        		Alert alert = new Alert(AlertType.ERROR);
+           		alert.setHeaderText("Error");
+           		alert.setContentText("You don't have admin access to this group");
+           		alert.showAndWait();
+        		return;
+        	}
+        	viewLabel.setText("Users: ");
+        	for(User u : App.users) {
+        		if(!u.passwordIsInviteCode && App.viewMap.get(u.username).contains(groupField.getText())) viewLabel.setText(viewLabel.getText() + " " + u.username + ",");
+        	}
+        	viewLabel.setMaxWidth(250);
+        	viewLabel.setWrapText(true);
+        	viewLabel.setText(viewLabel.getText().substring(0,viewLabel.getText().length()-1));
 
         });
         
@@ -293,12 +316,12 @@ public class HomePage {
         
         grid.add(btn,1,2);
         
-        grid.add(userListLabel, 0, 8);
+        grid.add(userListLabel, 0, 5);
         GridPane.setHalignment(userListLabel, HPos.RIGHT);
 
-        grid.add(userList, 1, 8);
-        grid.add(editUser, 2, 8);
-
+        grid.add(userList, 1, 5);
+        grid.add(editUser, 2, 5);
+        grid.add(viewLabel, 1, 7);
 
         // new user/invite code generation
         btn.setOnAction(e ->{
@@ -333,8 +356,8 @@ public class HomePage {
         	}
         });
 
-        grid.add(articles, 1, 12);
-        grid.add(logout,0,14);
+        grid.add(articles, 1, 8);
+        grid.add(logout,0,10);
         
         
         BorderPane totalPage = new BorderPane();
@@ -417,8 +440,10 @@ public class HomePage {
         Button removeAccess = new Button("Remove Access");
         Button viewAccess = new Button("View User Access");
         Label viewLabel = new Label("");
+        viewLabel.setWrapText(true);
+        viewLabel.setPrefWidth(250);
         VBox accessGroup = new VBox();
-        accessGroup.getChildren().addAll(groupBox, addViewer, addAdmin, removeAccess);
+        accessGroup.getChildren().addAll(groupBox, addViewer, addAdmin, removeAccess,viewAccess);
         accessGroup.setSpacing(5);
         Label studentListLabel = new Label("Student List: ");
         
@@ -433,14 +458,7 @@ public class HomePage {
         }
         ListView<String> userList = new ListView<>(items);
         
-//         list selection handling
-//        userList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-//        	int x = App.indexFromUsername(newValue);
-//        	if(x != -1) {
-// 
-//        	}
-//        });
-        
+        //Group button actions
         addViewer.setOnAction(e->{
         	if(groupField.getText().length() > 0 && !App.checkAdminAccess(u.username, groupField.getText())) {
         		Alert alert = new Alert(AlertType.ERROR);
@@ -476,23 +494,26 @@ public class HomePage {
 
         });
         
-//        viewAccess.setOnAction(e->{
-//        	if(groupField.getText().length() > 0 && !App.checkAdminAccess(u.username, groupField.getText())) {
-//        		Alert alert = new Alert(AlertType.ERROR);
-//           		alert.setHeaderText("Error");
-//           		alert.setContentText("You don't have admin access to this group");
-//           		alert.showAndWait();
-//        		return;
-//        	}
-//        	viewLabel.setText("");
-//        	for(User u : App.users) {
-//        		if(App.viewMap.get(u).contains(groupField.getText()));
-//        	}
-//        });
+        viewAccess.setOnAction(e->{
+        	if(groupField.getText().length() > 0 && !App.checkAdminAccess(u.username, groupField.getText())) {
+        		Alert alert = new Alert(AlertType.ERROR);
+           		alert.setHeaderText("Error");
+           		alert.setContentText("You don't have admin access to this group");
+           		alert.showAndWait();
+        		return;
+        	}
+        	viewLabel.setText("Users: ");
+        	for(User u : App.users) {
+        		if(!u.passwordIsInviteCode && App.viewMap.get(u.username).contains(groupField.getText())) viewLabel.setText(viewLabel.getText() + " " + u.username + ",");
+        	}
+        	viewLabel.setText(viewLabel.getText().substring(0,viewLabel.getText().length()-1));
+
+        });
         
         grid.add(studentListLabel, 1, 7);
         grid.add(userList, 1, 8);
         grid.add(accessGroup, 2, 8);
+        grid.add(viewLabel, 1, 9);
         grid.add(articles, 1, 10);
         grid.add(logout,0,12);
         

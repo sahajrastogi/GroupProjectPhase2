@@ -129,6 +129,8 @@ public class InvitePage {
 		if(password.equals(cpassword)) {
 			//User u = users.get(currUserIndex);
 			u.username = username;
+			App.viewMap.put(username, new ArrayList<String>());
+			App.adminMap.put(username, new ArrayList<String>());
 			u.password = password.toCharArray();
 			u.passwordIsInviteCode = false;
 			return "valid";
