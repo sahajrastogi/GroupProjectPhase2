@@ -512,7 +512,7 @@ public class ArticlePage {
         	}catch(Exception ex) {
         		Alert alert = new Alert(AlertType.ERROR);
         		alert.setHeaderText("Error");
-        		alert.setContentText("Invalid file nafme");
+        		alert.setContentText("Invalid file name");
         		alert.showAndWait();
         	}
         });
