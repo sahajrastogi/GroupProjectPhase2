@@ -7,6 +7,11 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * <p> Class that contains data and helper methods for help items </p>
+ * 
+ * <p> Description: This class the contents of a help item, along with utilities that help manage and use the contents.</p>
+ */
 public class HelpItem {
 	//ensures no double assignment of ID
 	public static int maxId = 0;
