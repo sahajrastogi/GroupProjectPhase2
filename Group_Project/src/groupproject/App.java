@@ -323,8 +323,11 @@ public class App extends Application {
         
         
     }
-    
-    //Find index of user from their username
+    /**
+	 * Find index of user from their username
+	 * 
+	 * @param s username to search for
+	 */
     public static int indexFromUsername(String s) {
     	for(int i=0;i<users.size();i++) {
     		if(users.get(i).username.equals(s)) {
@@ -334,7 +337,11 @@ public class App extends Application {
     	return -1;
     }
     
-    //Check whether the current list of Users contains a certain username
+    /**
+	 * Check if a user with exists based off of their username
+	 * 
+	 * @param s username to search for
+	 */
     public static boolean containsUsername(String s) {
     	for(int i=0;i<users.size();i++) {
     		if(users.get(i).username.equals(s)) {
@@ -344,27 +351,73 @@ public class App extends Application {
     	return false;
     }
     
+    /**
+	 * Initialize maps
+	 * 
+	 */
     public static void initMaps() {
     	for(User u : users) {
     		viewMap.put(u.username,new ArrayList<String>());
     		adminMap.put(u.username,new ArrayList<String>());
     	}
     }
+    
+    /**
+	 * Check if the user is an admin for a given group
+	 * 
+	 * @param username username to search for
+	 * @param group group to search in
+	 */
     public static boolean checkAdminAccess(String username, String group) {
     	return adminMap.get(username).contains(group.trim());
     }
+    
+    /**
+	 * Check if the user has view permissions for a given group
+	 * 
+	 * @param username username to search for
+	 * @param group group to search in
+	 */
     public static boolean checkViewAccess(String username, String group) {
     	return viewMap.get(username).contains(group.trim());
     }
+    
+    /**
+	 * Add a user to the view map with a given group
+	 * 
+	 * @param username username of the user
+	 * @param group group to add
+	 */
     public static void viewMapAdd(String username, String group) {
     	if(!viewMap.get(username).contains(group.trim())) viewMap.get(username).add(group.trim());
     }
+    
+    /**
+	 * Add a user to the admin map for a given group
+	 * 
+	 * @param username username of the user
+	 * @param group group to add
+	 */
     public static void adminMapAdd(String username, String group) {
     	if(!adminMap.get(username).contains(group.trim())) adminMap.get(username).add(group.trim());
     }
+    
+    /**
+	 * Remove a user from the view map of a given group
+	 * 
+	 * @param username username of the user
+	 * @param group group to remove
+	 */
     public static void viewMapRemove(String username, String group) {
     	if(viewMap.get(username).contains(group.trim())) viewMap.get(username).remove(group.trim());
     }
+    
+    /**
+	 * Remove a user from the admin map of a given group
+	 * 
+	 * @param username username of the user
+	 * @param group group to remove
+	 */
     public static void adminMapRemove(String username, String group) {
     	if(adminMap.get(username).contains(group.trim())) adminMap.get(username).remove(group.trim());
     }
